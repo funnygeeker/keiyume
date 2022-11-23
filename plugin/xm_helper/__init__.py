@@ -1,7 +1,5 @@
 # 导入框架模块
-from core.api import *
-from core.event import *
-from core.log_mgr import *
+from core.keiyume import *
 
 # 导入另外需要的模块
 from .xm_task import *
@@ -11,20 +9,13 @@ from .xm_config import *
 from .xm_detection import *
 
 # 插件名称
-name = '【溪梦助手-群管2.0.0_BETA1】'
+name = '【溪梦助手-群管2.0.0_BETA2】'
 
 # 插件作者
 author = '稽术宅'
 
 # 插件版本
-version = '2.0.0_BETA1'
-
-# 运行优先级
-# 用于区分加载顺序
-# 数字越小越先执行
-# 1024及以下被本框架开发者保留
-# 无特殊需求请不要设置小于1024的值
-sequence = 512
+version = '2.0.0_BETA2'
 
 # 插件说明
 description = '''溪梦框架的群聊管理插件：溪梦助手，让溪梦协助你更轻松的管理群聊~
@@ -33,32 +24,17 @@ description = '''溪梦框架的群聊管理插件：溪梦助手，让溪梦协
   句库补充：
   QQ：15140**011  汐酱'''
 
-# 插件运行位置
-# start 程序主体运行前
-# before 消息识别处理前
-# after 消息识别处理后
-# exit 程序正常退出后
-# cmd 命令被识别为非内置/无效时
-location = 'after'
-
 # 兼容性标识（兼容的溪梦框架版本）
-compatible = ['2.0.0_BETA1']
+compatible = ['2.0.0-beta.2']
 
 
 class Main(Event):
-    def __init__(self, obj: object):
+    def __init__(self, obj: object, *args, **kwargs):
         super().__init__(obj)
-
-    def Run(self, *args, **kwargs):
         '''【符合规范的插件将从这里开始运行】'''
         # 消息处理 #
         # 如果事件为需要管理的群的消息
         if self.on_group_message(group_id=XM_Config.all_config['config']['groups_manage']['groups_manage']):
-            '''if self.on_full_match('ban'):
-                XM_Task.Group_Whole_Ban(XM_Config.all_config['config']['groups_manage']['groups_manage'],enable=True)
-            elif self.on_full_match('unban'):
-                XM_Task.Group_Whole_Ban(XM_Config.all_config['config']['groups_manage']['groups_manage'],enable=False)'''
-
             # 默认消息不是广告，不是脏话，无触发关键词，无关键词类型，无触发的检测引擎
             self.msg_status = {'ads': 0, 'bad': 0, 'ignore': 0,
                                'key_word': None, 'key_word_type': None, 'engine': None}
@@ -85,7 +61,7 @@ class Main(Event):
                 if (self.msg_status['ads'] == 1 or self.msg_status['bad'] == 1) and self.msg_status['ignore'] == 0:
                     # 如果启用了撤回消息
                     if XM_Config.all_config['group']['group_punish']['del_msg_delay'] != '':
-                        with Lock:
+                        with lock:
                             XM_Task.del_message_id[self.message_id] = scheduler.add_job(func=XM_Task.Del_Message, trigger='date', run_date=time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(
                                 time.time()+2+int(XM_Config.all_config['group']['group_punish']['del_msg_delay']))), kwargs={'message_id': self.message_id}, id=str(self.message_id))
 
@@ -180,7 +156,7 @@ class Main(Event):
 
         # 需要撤回的消息若被提前撤回则删除计划任务
         elif self.on_group_notice(notice_type='group_recall'):
-            with Lock:
+            with lock:
                 if XM_Task.del_message_id.get(self.message_id) != None:
                     scheduler.remove_job(str(self.message_id))
                     logger.info(
@@ -209,11 +185,17 @@ class Main(Event):
                                 time.time()+2)), kwargs={'flag': self.data['flag'], 'sub_type': self.data['sub_type'], 'approve': True, 'group_id': self.group_id, 'user_id': self.user_id})
                             break
 
+Plugin.reg(cls=Main,location='after',sequence=1024)
 
-'''        elif self.on_notice('group_ban') and self.user_id == 0: # 全体禁言事件
-            if self.sub_type == 'ban':
-                XM_Task.group_whole_ban_state[self.group_id] == True
-                print('开始全体禁言',XM_Task.group_whole_ban_state)
-            elif self.sub_type == 'lift_ban':
-                XM_Task.group_whole_ban_state[self.group_id] == False
-                print('解除全体禁言',XM_Task.group_whole_ban_state)'''
+# location
+# 插件运行位置
+# start 程序主体运行前
+# before 每次消息识别处理前
+# after 每次消息识别处理后
+
+# sequence
+# 运行优先级
+# 用于区分加载顺序
+# 数字越小越先执行
+# 1024及以下被本框架开发者保留
+# 无特殊需求请不要设置小于1024的值

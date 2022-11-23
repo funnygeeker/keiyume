@@ -20,7 +20,7 @@ class XM_Reply():
                     for line in XM_Config.all_send['self_help_qa'][file_name]:
                         if line[0] in self.message:
                             if len(line)<2:
-                                logger.warn(f'【警告】自助问答功能的配置文件存在：缺失答案的问题，请补充答案！\n')
+                                logger.warn(f'【溪梦助手-警告】自助问答功能的配置文件存在：缺失答案的问题，请补充答案！\n')
                                 return False
                             the_line=line.copy()
                             del the_line[0]

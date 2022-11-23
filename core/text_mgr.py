@@ -1,10 +1,11 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-# 溪梦框架文本管理模块
+# keiyume_2.0.0-beta.2
+# 溪梦框架文本操作模块
 # 作者：稽术宅（funnygeeker）
 # 溪梦框架项目交流QQ群：332568832
 # 作者Bilibili：https://b23.tv/b39RG2r
-# Github：https://github.com/funnygeeker/
+# Github：https://github.com/funnygeeker
 # 参考资料：
 # Python读大型文本：https://blog.csdn.net/potato012345/article/details/88728709
 # chardet文本编码检测：https://blog.csdn.net/tianzhu123/article/details/8187470
@@ -13,17 +14,18 @@ import os
 try:
     import chardet  # 文件编码检测，需安装
 except ImportError:
+    print('>> 检测到缺少 chardet 库，正在安装...')
     os.system('pip3 install chardet')
     import chardet
 
 
-class Text_Mgt():
+class Text():
     '文本管理模块，包含：文本编码检测，文本以列表形式读取，判断文本中包含的内容，文本文件存在性检查'
     def Encodeing_Detect(file_path: str) -> str:
         '文本编码检测，无法识别则默认为"utf-8"编码 返回：str'
         with open(file_path, 'rb') as file:
             result = chardet.detect(file.read(1048576))  # 最多读取1MB文件进行检测
-            #print(result['confidence'])#
+            # print(result['confidence'])#
             if float(result['confidence']) >= 0.5:  # 如果置信度大于50%
                 return result['encoding'].lower()
             else:
@@ -34,7 +36,7 @@ class Text_Mgt():
         choose_mode:可选排除(0)或选择(1)某字符串[choose]开头的行，
         read_mode:可选从行头选择(0)还是从行尾选择字符串[choose](1)，不支持匹配换行符 返回：list'''
         if encoding == '':  # 如果没有文本编码参数，则自动识别编码
-            encoding = Text_Mgt.Encodeing_Detect(file_path)
+            encoding = Text.Encodeing_Detect(file_path)
         with open(file_path, "r", encoding=encoding) as all_text:
             if choose == '':  # 如果不需要排除或选择某字符串开头的文本行
                 text_list = [text.strip("\n")
@@ -59,7 +61,7 @@ class Text_Mgt():
     def Read_Text(file_path: str, encoding: str = ''):
         '读取文本并返回字符串'
         if encoding == '':  # 如果没有文本编码参数，则自动识别编码
-            encoding = Text_Mgt.Encodeing_Detect(file_path)
+            encoding = Text.Encodeing_Detect(file_path)
         with open(file_path, "r", encoding=encoding) as all_text:
             return ''.join(all_text)
 
@@ -93,7 +95,7 @@ class Text_Mgt():
             # 判断是否为需要读取的后缀
             if ((os.path.splitext(file_name)[1]).lower() == file_extension or file_extension == '*') and os.path.isfile(f'{folder_path}/{file_name}'):
                 # 判断是否为文件，小写处理文件扩展名，确定是否为需要读取的文件，并进行读取
-                file_data = Text_Mgt.List_Read_Text(
+                file_data = Text.List_Read_Text(
                     file_path=f'{folder_path}/{file_name}',
                     choose=choose,
                     choose_mode=chose_mode,

@@ -1,9 +1,18 @@
-# 参考了：https://github.com/FloatTech/voidbot
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+# keiyume_2.0.0-beta.2
+# 溪梦框架事件判断模块
+# 作者：稽术宅（funnygeeker）
+# 溪梦框架项目交流QQ群：332568832
+# 作者Bilibili：https://b23.tv/b39RG2r
+# Github：https://github.com/funnygeeker
+# 参考资料：https://github.com/FloatTech/voidbot
 class Event():
     def __init__(self, obj: object) -> None:
         '''将常用的消息字段代入self对象'''
         self.ws = obj.ws
         self.data = obj.data
+        self.channel = obj.channel
         self.echo = self.data.get('echo')
         self.time = self.data.get('time')
         self.user_id = self.data.get('user_id')
@@ -76,7 +85,7 @@ class Event():
         normal(常规)、anonymous(匿名)、notice(通知)这三种消息
         group_id:list/str/int(自动判断)'''
         if self.data.get('message_type') == 'group':
-            if group_id == None:
+            if group_id == None or group_id == '' or group_id == ['']:
                 return True
             elif type(group_id) == list:
                 for id in group_id:
@@ -124,7 +133,7 @@ class Event():
         '''判断接收到的事件是否来自私聊(可指定)
         user_id:list/str/int(自动判断)'''
         if self.data.get('message_type') == 'private':
-            if user_id == None:
+            if user_id == None or user_id == '' or user_id == ['']:
                 return True
             elif type(user_id) == list:
                 for id in user_id:
@@ -134,7 +143,7 @@ class Event():
                 return True
         return False
 
-    #消息子类型#
+    # 消息子类型#
     def on_sub_type(self, sub_type: str = None):
         '如果上报事件含消息子类型，返回：真'
         if self.data.get('sub_type') != None:
@@ -144,7 +153,7 @@ class Event():
                 return self.data['sub_type'] == sub_type
         return False
 
-    #消息匹配#
+    # 消息匹配#
     def on_full_match(self, keyword: str) -> bool:
         '判断接收到的消息内容是否完全一致'
         return self.on_message() and self.data['message'] == keyword
@@ -164,7 +173,7 @@ class Event():
     def on_at_me(self):
         return self.on_keywords_match(keywords=f'[CQ:at,qq={self.self_user_id}]')
 
-    # 身份判断 TODO
+    # 身份判断
     def is_super_user(self):
         pass
 

@@ -1,10 +1,7 @@
 # 导入框架模块
-from core.api import *
-from core.event import *
-from core.log_mgr import *
+from core.keiyume import *
 
 # 导入另外需要的模块
-
 import time
 from random import randint
 
@@ -17,33 +14,16 @@ author = '稽术宅'
 # 插件版本
 version = '1.0.0'
 
-# 运行优先级
-# 用于区分加载顺序
-# 数字越小越先执行
-# 1024及以下被本框架开发者保留
-# 无特殊需求请不要设置小于1024的值
-sequence = 1024
-
 # 插件说明
 description = '禁止洗滑稽！！！'
 
-# 插件运行位置
-# start 程序主体运行前
-# before 每次消息识别处理前
-# after 每次消息识别处理后
-# exit 程序正常退出后
-# cmd 命令被识别为非内置/无效时
-location = 'after'
-
 # 兼容性标识（兼容的插件规范版本）
-compatible = ['2.0.0_BETA1']
+compatible = ['2.0.0-beta.2']
 
 
 class Main(Event):
     def __init__(self, obj: object):
         super().__init__(obj)
-
-    def Run(self, *args, **kwargs):
         '''【符合规范的插件将从这里开始运行】'''
 
         # 最简单插件例子
@@ -70,3 +50,18 @@ class Main(Event):
             reply = replys[randint(0, len(replys)-1)]
             time.sleep(1)
             Api.send_group_msg(group_id=self.group_id, message=reply)
+
+Plugin.reg(cls=Main,location='after',sequence=2048)
+
+# location
+# 插件运行位置
+# start 程序主体运行前
+# before 每次消息识别处理前
+# after 每次消息识别处理后
+
+# sequence
+# 运行优先级
+# 用于区分加载顺序
+# 数字越小越先执行
+# 1024及以下被本框架开发者保留
+# 无特殊需求请不要设置小于1024的值
