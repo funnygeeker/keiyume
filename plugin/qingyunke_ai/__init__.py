@@ -7,7 +7,7 @@ import json
 import requests
 
 # 插件名称
-name = '青云客智能聊天机器人'
+name = '智能聊天机器人'
 
 # 插件作者
 author = '稽术宅'

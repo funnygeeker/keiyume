@@ -6,7 +6,7 @@ import json
 import requests
 
 # 插件名称
-name = '通过MCSM面板查询系统状态'
+name = 'MC服务器查询与管理'
 
 # 插件作者
 author = '稽术宅'
@@ -15,7 +15,7 @@ author = '稽术宅'
 version = '1.0.0_BETA2'
 
 # 插件说明
-description = '使用了MCSM面板的api，当前使用的是定制版（后续转通用版）'
+description = '使用了MCSM面板的api，完整功能仅支持MCSM启动的服务器'
 
 # 兼容性标识（兼容的插件规范版本）
 compatible = ['2.0.0-beta.2']
