@@ -22,3 +22,6 @@
 #### 查看说明文档
 社区服务器：[溪梦文档站](https://docs.keiyume.com/keiyume) （最新消息和内容）
 稳定服务器：[Github Pages](https://funnygeeker.github.io/keiyume) （稳定的服务器）
+
+### 运行截图
+<img width="367" alt="image" src="https://user-images.githubusercontent.com/96659329/203594423-53053944-8b0a-4bc8-8f45-4a633f784d76.png">
