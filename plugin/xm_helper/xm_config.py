@@ -36,7 +36,7 @@ class XM_Config():
             for dir_name in dirs_name:  # 遍历文件夹
                 if os.path.isdir(f'{send_folder_path}/{dir_name}'): # 判断是否为目录
                     # 读取目录下所有txt文件
-                    XM_Config.all_send[f'{dir_name}'] = Text.List_Read_TXT_Under_Folder(folder_path=f'{send_folder_path}/{dir_name}',choose='#',chose_mode=0,return_mode='dict')
+                    XM_Config.all_send[f'{dir_name}'] = Text.read_file_in_folder(folder_path=f'{send_folder_path}/{dir_name}', choose='#', chose_mode=0, return_mode='dict')
         # 读取txt配置文件(words文件夹)
         words_folder_path = './plugin/xm_helper/config/words'
         dirs_name = os.listdir(words_folder_path)  # 获取文件夹下的所有文件和文件夹名称
@@ -44,20 +44,20 @@ class XM_Config():
             for dir_name in dirs_name:  # 遍历文件夹
                 if os.path.isdir(f'{words_folder_path}/{dir_name}'): # 判断是否为目录
                     # 读取目录下所有txt文件
-                    XM_Config.all_words[f'{dir_name}'] = Text.List_Read_TXT_Under_Folder(folder_path=f'{words_folder_path}/{dir_name}',choose='#',chose_mode=0,return_mode='dict')
+                    XM_Config.all_words[f'{dir_name}'] = Text.read_file_in_folder(folder_path=f'{words_folder_path}/{dir_name}', choose='#', chose_mode=0, return_mode='dict')
 
     def Init_Config():
         '始化所有配置文件，将需要转化的配置转化为合适的值'
         # 列表分割
-        XM_Config.all_config['config']['groups_manage']['groups_manage']=Tools.Format_Conversion(text=XM_Config.all_config['config']['groups_manage']['groups_manage'],mode='int',key=' ')
+        XM_Config.all_config['config']['groups_manage']['groups_manage']=Tools.convert_format(text=XM_Config.all_config['config']['groups_manage']['groups_manage'], mode='int', key=' ')
         #XM_Config.all_config['config']['admin']['super_user_id']=Tools.Format_Conversion(text=XM_Config.all_config['config']['admin']['super_user_id'],mode='int',key=' ')
         #XM_Config.all_config['config']['admin']['admin_user_id']=Tools.Format_Conversion(text=XM_Config.all_config['config']['admin']['admin_user_id'],mode='int',key=' ')
-        XM_Config.all_config['config']['admin']['groups_report_user_id']=Tools.Format_Conversion(text=XM_Config.all_config['config']['admin']['groups_report_user_id'],mode='int',key=' ')
-        XM_Config.all_config['group']['group_punish']['ban_time']=Tools.Format_Conversion(text=XM_Config.all_config['group']['group_punish']['ban_time'],mode='int',key=' ')
-        XM_Config.all_config['group']['group_function']['timed_whole_ban']=Tools.Format_Conversion(text=XM_Config.all_config['group']['group_function']['timed_whole_ban'],mode='str',key=' ')
+        XM_Config.all_config['config']['admin']['groups_report_user_id']=Tools.convert_format(text=XM_Config.all_config['config']['admin']['groups_report_user_id'], mode='int', key=' ')
+        XM_Config.all_config['group']['group_punish']['ban_time']=Tools.convert_format(text=XM_Config.all_config['group']['group_punish']['ban_time'], mode='int', key=' ')
+        XM_Config.all_config['group']['group_function']['timed_whole_ban']=Tools.convert_format(text=XM_Config.all_config['group']['group_function']['timed_whole_ban'], mode='str', key=' ')
         for file_name in XM_Config.all_send['self_help_qa']:
             for line in range(len(XM_Config.all_send['self_help_qa'][file_name])):
-                XM_Config.all_send['self_help_qa'][file_name][line]=Tools.Format_Conversion(text=XM_Config.all_send['self_help_qa'][file_name][line],mode='str',key='/#/')
+                XM_Config.all_send['self_help_qa'][file_name][line]=Tools.convert_format(text=XM_Config.all_send['self_help_qa'][file_name][line], mode='str', key='/#/')
         # 类型转换
 
 
