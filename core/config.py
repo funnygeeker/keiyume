@@ -26,7 +26,7 @@ class Config():
     def Read_Config(file_path: str, encoding: str = '') -> dict:
         '''【读取单个设置文件】返回：dict（str）'''
         if encoding == '':  # 如果没有设置读取文件的编码
-            encoding = Text.Encodeing_Detect(file_path=file_path)
+            encoding = Text.detect_encoding(file_path=file_path)
         return ConfigObj(file_path, encoding=encoding)
 
     def Load_Config():
