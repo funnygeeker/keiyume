@@ -61,11 +61,8 @@
 | 数据类型 | 可能的值 | 说明 |
 | :---- | :---- | :---- |
 | list[tuple] | - | 符合条件的数据列表 |
-##### 示例A
-`sql.new(table_name = '数据表表名', info1 = 'INT', info2 = 'TEXT')`
-##### 示例B：
-`sql.new(table_name = '数据表表名', **{'info1': 'INT', 'info2': 'TEXT'})`
-
+##### 示例
+`sql.read(table_name = '数据表表名', keys = ['info1'], condition = 'info1="测试" OR id=1')`
 
 #### 写入数据
 函数名：`write()`
