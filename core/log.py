@@ -1,151 +1,129 @@
-#!/usr/bin/python3
-# -*- coding: utf-8 -*-
-# keiyume_2.0.0-beta.2
-# 溪梦框架日志管理模块
+# -*- coding : utf-8-*-
+# 溪梦框架：core/log.py
 # 作者：稽术宅（funnygeeker）
 # 溪梦框架项目交流QQ群：332568832
 # 作者Bilibili：https://b23.tv/b39RG2r
-# Github：https://github.com/funnygeeker/
+# Github：https://github.com/funnygeeker/keiyume
+#
 # 参考资料：
-# https://www.cnblogs.com/xyztank/articles/13599165.html
-# Python日期格式化：https://www.cnblogs.com/pyxiaomangshe/p/7918850.html
-# logging模块日志颜色及基本使用：https://blog.csdn.net/qq_36072270/article/details/105345562
+# 博客园 - Python 日期格式化知识：https://www.cnblogs.com/pyxiaomangshe/p/7918850.html
+# 博客园 - Python Log文件大小设置及备份：https://www.cnblogs.com/xyztank/articles/13599165.html
+# CSDN - python 中 logging 模块显示不同颜色的日志：https://blog.csdn.net/qq_36072270/article/details/105345562
+
 
 import os
 import logging
-try:
-    import colorlog  # 需安装，用于控制台彩色日志显示
-except ImportError:
-    print('>> 检测到缺少 colorlog 库，正在安装...')
-    os.system('pip3 install colorlog')
-    import colorlog
 import traceback
+from typing import Optional
 from logging.handlers import RotatingFileHandler
 
+# 控制台彩色日志显示
+try:
+    import colorlog
+except ImportError:
+    print('>> 检测到缺少 colorlog 库，正在安装...')
+    os.system('pip3 install colorlog -i https://mirrors.aliyun.com/pypi/simple/')
+    import colorlog
 
-logger = logging.getLogger()
 
+class Log(logging.Logger):
+    def __init__(self, file: str = "./logs/Keiyume.log",
+                 name: Optional[str] = None,
+                 enable_console_handler: bool = True,
+                 enable_file_handler: bool = True,
+                 console_log_level: int = 20,
+                 file_log_level: int = 10,
+                 max_bytes: int = 2 * 1024 * 1024, backup_count: int = 6,
+                 log_colors_config: Optional[dict] = None,
+                 console_formatter: Optional[object] = None,
+                 file_formatter: Optional[object] = None):
+        """
+        日志记录模块
+        Args:
+            file: 要保存的日志文件的名称及路径
+            name: 为logging日志记录器创建一个名称
+            enable_console_handler: 是否启用控制台日志输出
+            enable_file_handler: 是否启用日志文件输出
+            console_log_level: 控制台显示的最小日志等级
+            file_log_level: 日志文件输出的最小日志等级
+            max_bytes: 日志文件最大大小（单位：比特）
+            backup_count: 日志文件切割次数（不应小于1）
+            log_colors_config: 控制台日志颜色配置
+            console_formatter: 控制台日志输出格式
+            file_formatter: 日志文件输出格式
+        """
+        super().__init__(name)
+        """if name is not None:
+            self.logger_ = logging.getLogger()  # 创建一个根日志记录器
+            self.logger_.setLevel(logging.NOTSET)  # 设置根记录器的日志等级
+        self.logger = logging.getLogger(name)  # 创建一个日志记录器"""
+        if not os.path.exists(os.path.dirname(file)):  # 若不存在日志路径，则自动创建
+            os.makedirs(os.path.dirname(file))
+        self.setLevel(logging.NOTSET)  # 设置记录器的日志等级
 
-class Log:
-    '【日志管理模块：首次运行时使用‘Log_Conf’函数初始化后，使用已实例化的‘logger’对象记录日志】'
-
-    def Log_Conf(log_file_name='XM_Framework.log', file_log_level=10, console_log_level=20, max_bytes=1*1024*1024, backup_count=2):
-        '''日志设置：
-        日志文件名，
-        文件日志等级(NOTICE=0,DEBUG=10,INFO=20,WARNING=30,ERROR=40,CRITICAL=50)，
-        控制台日志等级(NOTICE=0,DEBUG=10,INFO=20,WARNING=30,ERROR=40,CRITICAL=50)，
-        最大单个日志大小（单位：字节），
-        日志拆分次数（不能为0，1为2份，2为3份，以此类推）'''
-        global logger
-        # logger = builtins.logger = logging.getLogger() # 已弃用，使logger可以全局调用
-
-        # cur_path = os.path.dirname(os.path.realpath(__file__))  # 当前项目路径
-        # log_path为存放日志的路径，'logs'为创建的文件夹名
-        # log_path = os.path.join(os.path.dirname(cur_path), 'logs')
-        log_path = os.path.join(os.path.dirname('.'), 'logs')
-        if not os.path.exists(log_path):
-            os.mkdir(log_path)  # 若不存在logs文件夹，则自动创建
-
-        # 检查日志文件名是否合法
-        log_file_name = str(log_file_name)
-        for i in ['\\', '/', ':', '*', '\"', '<', '>', '|']:
-            log_file_name = log_file_name.replace(i, '')
-        for i in ['', '.', '..']:
-            if log_file_name == i:  # 避免文件名不合法
-                log_file_name = 'XM_Framework.log'
-                break
-
-        # 终端输出日志颜色配置
-        log_colors_config = {
-            'DEBUG': 'bold_cyan',
-            'INFO': 'white',
-            'WARNING': 'black,bg_yellow',
-            'ERROR': 'black,bg_red',
-            'CRITICAL': 'black,bg_purple',
-        }
-
-        # 输出到控制台
-        console_handler = logging.StreamHandler()
-        # 输出到文件
-        if backup_count == 0:  # 强制分割日志文件，防止日志文件大小无限增加
-            backup_count = 1
-        file_handler = RotatingFileHandler(filename=(
-            log_path+'/'+log_file_name), mode='a', maxBytes=max_bytes, backupCount=backup_count, encoding='utf8')
-
-        # 日志输出格式
-
-        # 日志文件输出格式
-        file_formatter = logging.Formatter(
-            fmt='[%(asctime)s.%(msecs)03d] -> [%(levelname)s] %(filename)s/%(module)s/%(funcName)s(%(lineno)d):\n%(message)s',
-            datefmt='%Y-%m-%d %H:%M:%S'
-        )
-        if console_log_level <= 10:
+        if enable_console_handler:  # 如果启用控制台输出日志
+            self.console_handler = logging.StreamHandler()  # 创建控制台的日志记录器
+            if log_colors_config is None:  # 如果没有配置日志颜色
+                # 终端输出日志颜色配置
+                log_colors_config = {
+                    'DEBUG': 'bold_cyan',
+                    'INFO': 'white',
+                    'WARNING': 'black,bg_yellow',
+                    'ERROR': 'black,bg_red',
+                    'CRITICAL': 'black,bg_purple',
+                }
             # 控制台输出格式
-            console_formatter = colorlog.ColoredFormatter(
-                fmt='%(log_color)s[%(asctime)s.%(msecs)03d] -> [%(levelname)s] %(filename)s/%(module)s/%(funcName)s(%(lineno)d):\n%(message)s',
-                datefmt='%Y-%m-%d %H:%M:%S',
-                log_colors=log_colors_config
-            )
-        else:
-            # 控制台输出格式
-            console_formatter = colorlog.ColoredFormatter(
-                fmt='%(log_color)s[%(asctime)s.%(msecs)03d] -> [%(levelname)s]:\n%(message)s',
-                datefmt='%Y-%m-%d %H:%M:%S',
-                log_colors=log_colors_config
-            )
-            logging.getLogger('apscheduler').setLevel(
-                logging.WARNING)  # 减少apscheduler的日志，以免影响美观
-            logging.getLogger('chardet').setLevel(
-                logging.WARNING)  # 减少chardet的日志，以免影响美观
-            logging.getLogger('websocket').setLevel(
-                logging.CRITICAL)  # 减少websocket的日志，以免影响美观
-                
-        console_handler.setFormatter(console_formatter)
-        file_handler.setFormatter(file_formatter)
+            if console_formatter is None:
+                if console_log_level <= 10:  # 只有日志等级在DEBUG以下时才在控制台输出详细的日志
+                    console_formatter = colorlog.ColoredFormatter(
+                        fmt='%(log_color)s[%(asctime)s.%(msecs)03d][%(levelname)s][%(threadName)s(%(thread)d) %('
+                            'pathname)s %(module)s.%(funcName)s(%(lineno)d)]:\n%(message)s\n',
+                        datefmt='%Y-%m-%d %H:%M:%S',
+                        log_colors=log_colors_config
+                    )
+                else:
+                    console_formatter = colorlog.ColoredFormatter(
+                        fmt='%(log_color)s[%(asctime)s.%(msecs)03d] [%(levelname)s]:\n%(message)s\n',
+                        datefmt='%Y-%m-%d %H:%M:%S',
+                        log_colors=log_colors_config
+                    )
 
-        # 重复日志问题：
-        # 1、防止多次addHandler；
-        # 2、loggername 保证每次添加的时候不一样；
-        # 3、显示完log之后调用removeHandler
-        if not logger.handlers:
-            logger.addHandler(console_handler)
-            logger.addHandler(file_handler)
+            # 输出到控制台
+            self.console_handler.setFormatter(console_formatter)
+            self.console_handler.setLevel(console_log_level)  # 设置控制台的日志等级
+            self.addHandler(self.console_handler)  # 添加控制台的日志记录器
 
-        console_handler.close()
-        file_handler.close()
+        if enable_file_handler:  # 如果启用日志文件输出日志
+            if backup_count < 1:  # 强制分割日志文件至少一次，防止日志文件大小无限制增加
+                backup_count = 1
+            self.file_handler = RotatingFileHandler(filename=file, maxBytes=max_bytes, backupCount=backup_count,
+                                                    encoding='utf8')  # 创建日志文件的日志记录器
+            if file_formatter is None:
+                # 日志文件输出格式
+                file_formatter = logging.Formatter(
+                    fmt='[%(asctime)s.%(msecs)03d][%(levelname)s][%(threadName)s(%(thread)d) %(pathname)s %('
+                        'module)s.%(funcName)s(%(lineno)d)]:\n%(message)s\n',
+                    datefmt='%Y-%m-%d %H:%M:%S'
+                )
+            # 输出到文件
+            self.file_handler.setFormatter(file_formatter)
+            self.file_handler.setLevel(file_log_level)
+            self.addHandler(self.file_handler)
 
-        # 日志级别，logger 和 handler以最高级别为准，不同handler之间可以不一样，不相互影响
-        # root日志等级
-        logger.setLevel(logging.NOTSET)
-        # 控制台日志等级
-        for i in [0, 10, 20, 30, 40, 50]:  # 逐一匹配列表
-            if i == console_log_level:  # 如果设置的日志等级符合规范
-                console_handler.setLevel(console_log_level)
-                break
-        else:
-            console_handler.setLevel(logging.DEBUG)
-            logger.error('【日志等级-控制台】设置不正确，将默认使用DEBUG等级！\n')
-        # 文件日志等级
-        for i in [0, 10, 20, 30, 40, 50]:  # 逐一匹配列表
-            if i == file_log_level:  # 如果设置的日志等级符合规范
-                file_handler.setLevel(file_log_level)
-                break
-        else:
-            file_handler.setLevel(logging.DEBUG)
-            logger.error('【日志等级-日志文件】设置不正确，将默认使用DEBUG等级！\n')
-        logger.debug('''日志模块加载完成...
-            __                           
-           / /___  ____ _____ ____  _____
-          / / __ \/ __ `/ __ `/ _ \/ ___/
-         / / /_/ / /_/ / /_/ /  __/ /    
-        /_/\____/\__, /\__, /\___/_/     
-                /____//____/             
-                                                   ''')
-
-    def Get_Error():
-        '使用traceback获取捕获到的错误'
+    @staticmethod
+    def get_error():
+        """使用traceback获取捕获到的错误"""
         return traceback.format_exc()
 
+
+if __name__ == "__main__":
+    logger = Log(console_log_level=10)
+    logger.console_handler.setLevel(20)
+    logger.debug("OK")
+    logger.info("OK")
+    logger.warning("OK")
+    logger.error("OK")
+    logger.critical("OK")
 
 '''
 输出format参数中可能用到的格式化串：
@@ -165,7 +143,6 @@ class Log:
 %(process)d 进程ID。可能没有
 %(message)s用户输出的消息
 **注：1和3/4只设置一个就可以，如果同时设置了1和3，log日志中会出现一条记录存了两遍的问题。
-
 
 格式化符号
 python中时间日期格式化符号：
@@ -192,15 +169,3 @@ python中时间日期格式化符号：
 %Z 当前时区的名称
 %% %号本身 
 '''
-
-if __name__ == '__main__':  # 代码测试
-    Log.Log_Conf()
-    '''for i in range(5):
-        logger.debug('debug')
-        logger.info('info')
-        logger.warning('warning')
-        logger.error('error')
-        logger.critical('critical')
-    logger.debug(Log_Mgt.Get_Error())
-    try: xxxxxxxx
-    except: logger.critical(Log_Mgt.Get_Error())'''

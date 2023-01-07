@@ -2,13 +2,13 @@
 
 ![logo](/keiyume.png)
 
-# 溪梦框架 <small>2.0</small>
+# 溪梦框架 <small>2.0.0-beta.3</small>
 
-> 依赖 go-cqhttp 运行的简易框架
+> 对 go-cqhttp api 进行了简易封装的框架
 
-- 无需考虑与go-cqhttp的通信问题
-- 简单、易用、插件开发快速上手
-- 整洁的控制台页面
+- 简单、易用、插件开发快速上手（但是现在貌似还不是）
+- 简化了小白与 go-cqhttp 的通信问题
+- 跨平台、多系统支持
 
 [溪梦社区](https://keiyume.com)
 [GitHub](https://github.com/funnygeeker/keiyume)
