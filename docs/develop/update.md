@@ -1,5 +1,32 @@
 ## 插件版本迁移
 
+### 从2.0.0-beta.2 迁移至 2.0.0-beta.3
+#### 迁移说明
+- 由于更改的内容较多，请重新阅读文档并重新编写插件
+
+#### 2.0.0-beta.3 插件示例
+```
+# 导入框架模块
+from core.keiyume import plugin, api, Event
+# 插件名称
+name = '示例插件'
+# 插件作者
+author = '不想写文档的程序员'
+# 插件版本
+version = '1.0.0'
+# 插件说明
+description = '''鹦鹉学舌，你说什么他就回什么'''
+# 兼容性标识（兼容的插件规范版本）
+compatible = ['2.0.0-beta.3']
+
+@plugin.reg(location='after',priority=4096)
+def main(self: Event):
+   if self.is_group_msg():  # 如果为群聊消息
+      api.send_group_msg(self.group_id, self.msg)
+   elif self.is_private_msg():  # 如果为私聊消息
+      api.send_private_msg(self.user_id, self.msg)
+```
+
 ### 从2.0.0-beta.1 迁移至 2.0.0-beta.2
 
 #### 迁移说明
@@ -11,7 +38,7 @@
 
 ?>详细内容请观察以下不同版本插件的变化：
 
-#### 2.0.0-beta.2（新）
+#### 2.0.0-beta.2 插件示例
 ```
 # 导入框架模块
 from core.keiyume import *
@@ -19,25 +46,24 @@ from core.keiyume import *
 import time
 from random import randint
 # 插件名称
-name = '滑稽'
+name = '你好'
 # 插件作者
 author = '稽术宅'
 # 插件版本
 version = '1.0.0'
 # 插件说明
-description = '禁止洗滑稽！！！'
+description = '你好啊！'
 # 兼容性标识（兼容的插件规范版本）
 compatible = ['2.0.0-beta.2']
 class Main(Event):
     def __init__(self, obj: object):
         super().__init__(obj)
         '''【符合规范的插件将从这里开始运行】'''
-        # 最简单插件例子
-        if self.on_group_message(666666666) and self.on_keyword_match('你好'):
-            #Api.send_group_message(666666666,'你好啊！')
+        if self.is_group_message() and self.on_keyword_match('你好'):
+            Api.send_group_msg(self.group_id,'你好啊！')
 Plugin.reg(cls=Main,location='after',sequence=1024)
 ```
-#### 2.0.0-beta.1（旧）
+#### 2.0.0-beta.1 插件示例
 ```
 # 导入框架模块
 from core.api import *
@@ -47,7 +73,7 @@ from core.log_mgr import *
 import time
 from random import randint
 # 插件名称
-name = '滑稽'
+name = '你好'
 # 插件作者
 author = '稽术宅'
 # 插件版本
@@ -59,7 +85,7 @@ version = '1.0.0'
 # 无特殊需求请不要设置小于1024的值
 sequence = 1024
 # 插件说明
-description = '禁止洗滑稽！！！'
+description = '你好啊！'
 # 插件运行位置
 # start 程序主体运行前
 # before 每次消息识别处理前
@@ -74,7 +100,6 @@ class Main(Event):
         super().__init__(obj)
     def Run(self, *args, **kwargs):
         '''【符合规范的插件将从这里开始运行】'''
-        # 最简单插件例子
-        if self.on_group_message(666666666) and self.on_keyword_match('你好'):
-            #Api.send_group_message(666666666,'你好啊！')
+        if self.on_group_message() and self.on_keyword_match('你好'):
+            Api.send_group_msg(self.group_id,'你好啊！')
 ```

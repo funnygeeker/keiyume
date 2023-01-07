@@ -8,15 +8,15 @@
   * [事件变量](develop/variable.md)
   * [接口函数](develop/api.md)
   * [工具函数](develop/tools.md)
+  * [试验功能](develop/lab.md)
   * [可用模块](develop/module.md)
   * [版本迁移](develop/update.md)
 * 插件市场
   * [插件公告](plugin/)
   * [官方插件](plugin/official.md)
-  * [推荐插件](plugin/recommend.md)
+  * [精选插件](plugin/selected.md)
 * 关于框架
   * [关于我们](about/)
   * [更新日志](about/update.md)
   * [开发计划](about/plan.md)
-  * [开发历程](about/history.md)
   * [文档更新](about/docs.md)

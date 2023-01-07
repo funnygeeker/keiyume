@@ -1,7 +1,8 @@
-/__pycache__
 logs/
+data/
 go-cqhttp/
 # Byte-compiled / optimized / DLL files
+/__pycache__
 __pycache__/
 *.py[cod]
 *$py.class
