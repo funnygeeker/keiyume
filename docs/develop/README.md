@@ -96,7 +96,7 @@ description = '''鹦鹉学舌，你说什么他就回什么'''
 # 兼容性标识（兼容的插件规范版本）
 compatible = ['2.0.0-beta.3']
 
-@plugin.reg(location='after',priority=4096)
+@plugin.reg(location='event',priority=4096)
 def main(self: Event):
    if self.is_group_msg():  # 如果为群聊消息
       api.send_group_msg(self.group_id, self.msg)
