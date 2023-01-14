@@ -11,13 +11,13 @@ name = '每日早报'
 # 插件作者
 author = '稽术宅'
 # 插件版本
-version = '1.0.0'
+version = '1.0.1'
 # 插件说明
 description = '''每天早上六点半，向群里发送当日的早报~
   超级用户和超级管理员都可以在群里或者私聊发送：“早报”命令来立刻获取早报'''
 # 兼容性标识
 compatible = ['2.0.0-beta.3-beta']
-# API 来源：http://bjb.yunwj.top/php/API/html.html?0
+# API 来源：http://api.2xb.cn
 
 
 plugin_path = os.path.dirname(__file__).replace("\\", "/")  # 自动获取当前插件所在的路径
@@ -42,10 +42,10 @@ def main(self: Event):
 
 
 def get():
-    result = requests.get(url='http://bjb.yunwj.top/php/tp/lj.php')
+    result = requests.get(url='http://api.2xb.cn/zaob')
     result = json.loads(result.text)  # 将接收到的 str 转换为 dict 格式
     logger.debug(f'早报API返回：{json.dumps(result, ensure_ascii=False, indent=4)}')  # 记录日志
-    return result['tp1']
+    return result['imageUrl']
 
 
 def post():
