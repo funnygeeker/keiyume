@@ -25,7 +25,7 @@ def main(self: Event):
     if self.is_group_msg() and self.is_at_me():
         msg = re.sub(r'\[CQ:(.*)]', '', self.message)  # 去除所有CQ码
         msg = msg.strip(' ')  # 去除文本左右可能有的空格
-        if msg and '给我管理员' not in msg:  # 仅在处理后的消息不为空时继续处理消息
+        if msg and '管理' not in re.compile('[^A-Z^a-z\u4e00-\u9fa5]').sub('', msg):  # 仅在处理后的消息不为空时继续处理消息
             # 调用青云客网络的API
             result = requests.get(url='http://api.qingyunke.com/api.php',
                                   params={'key': 'free', 'appid': '0', 'msg': msg})
